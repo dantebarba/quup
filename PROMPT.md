@@ -81,6 +81,7 @@ Please generate the solution in this specific order to ensure logical dependenci
 * Handle exceptions: If Plex is down or OpenAI is out of credits, the app should not crash; it should return a clean error JSON.
 * Use Type Hinting throughout the Python code.
 
+---
 ### 4. Acceptance criteria
 
 1. The application should be delivered with integration tests.
