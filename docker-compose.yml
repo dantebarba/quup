@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    image: quup-app:latest
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./.data:/app/.data
+      - ./samples:/app/samples:ro
