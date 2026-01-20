@@ -80,3 +80,13 @@ Please generate the solution in this specific order to ensure logical dependenci
 * Use `logging` instead of `print`.
 * Handle exceptions: If Plex is down or OpenAI is out of credits, the app should not crash; it should return a clean error JSON.
 * Use Type Hinting throughout the Python code.
+
+### 4. Acceptance criteria
+
+1. The application should be delivered with integration tests.
+2. Up to 10 tests are allowed in one or more the test suites.
+3. Each exposed endpoint should be tested with at least one success test case.
+4. Sample data located in the repository directory `samples/movies_library.json` can be used to mock Plex API.
+5. Documentation for deployment, environment configuration and testing configuration should be included.
+6. All tests should pass for the application to be considered accepted.
+7. THe aplication should deploy succesfully in order to be considered accepted.
