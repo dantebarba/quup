@@ -27,9 +27,13 @@ export USE_SAMPLE_DATA=true
 uvicorn app.main:app --reload --port 8000
 ```
 
+Con credenciales reales de Plex, exporta además `PLEX_URL`, `PLEX_TOKEN` y `PLEX_LIBRARY_NAME`; para OpenAI, exporta `OPENAI_API_KEY`.
+
 ## Endpoints
 - `POST /sync` — inicia sincronización en background. Header: `x-api-token`.
 - `POST /recommend` — retorna recomendaciones y dispara notificaciones. Header: `x-api-token`.
+
+Las respuestas están localizadas en español y se manejan errores con JSON limpio.
 
 ## Notificaciones
 - Telegram: activar con `ENABLE_TELEGRAM=true` + `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID`.
@@ -42,6 +46,8 @@ export USE_SAMPLE_DATA=true
 pytest -q
 ```
 Happy-path cubre `/sync` y `/recommend` y la heurística local.
+
+El sample de películas está en `samples/movies_library.json` y se usa para simular Plex en los tests.
 
 ## Docker
 ```bash

@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      API_AUTH_TOKEN: ${API_AUTH_TOKEN:?API_AUTH_TOKEN requerido}
+      USE_SAMPLE_DATA: ${USE_SAMPLE_DATA:-false}
+      PLEX_URL: ${PLEX_URL:-}
+      PLEX_TOKEN: ${PLEX_TOKEN:-}
+      PLEX_LIBRARY_NAME: ${PLEX_LIBRARY_NAME:-Movies}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o}
+      OPENAI_ASSISTANT_NAME: ${OPENAI_ASSISTANT_NAME:-Plex AI Curator}
+      ENABLE_TELEGRAM: ${ENABLE_TELEGRAM:-false}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    restart: unless-stopped
