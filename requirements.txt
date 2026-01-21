@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic-settings
+plexapi
+openai
+httpx
+pytest
+pytest-asyncio
+python-multipart
