@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  plex-ai-curator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plex-ai-curator
+    ports:
+      - "8000:8000"
+    environment:
+      # Security
+      - API_AUTH_TOKEN=${API_AUTH_TOKEN}
+      
+      # Plex Configuration
+      - PLEX_URL=${PLEX_URL}
+      - PLEX_TOKEN=${PLEX_TOKEN}
+      - PLEX_LIBRARY_NAME=${PLEX_LIBRARY_NAME:-Pelis}
+      
+      # OpenAI Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      - OPENAI_ASSISTANT_NAME=${OPENAI_ASSISTANT_NAME:-Plex AI Curator}
+      
+      # Feature Toggles
+      - ENABLE_TELEGRAM=${ENABLE_TELEGRAM:-false}
+      - ENABLE_PLEX_PLAYLIST=${ENABLE_PLEX_PLAYLIST:-true}
+      
+      # Telegram Configuration
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      
+      # Application Settings
+      - RECOMMENDATION_COUNT=${RECOMMENDATION_COUNT:-10}
+      - HISTORY_LOOKBACK=${HISTORY_LOOKBACK:-5}
+      - PLAYLIST_NAME=${PLAYLIST_NAME:-Recomendado por IA}
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    
+    networks:
+      - plex-ai-network
+
+networks:
+  plex-ai-network:
+    driver: bridge
