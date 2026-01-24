@@ -193,7 +193,7 @@ Respuesta:
 
 ### Modo Asíncrono (Recomendado para producción)
 ```bash
-curl -X POST "http://localhost:8000/recommend?sync_mode=true" \
+curl -X POST "http://localhost:8000/recommend?async_mode=true" \
   -H "x-api-token: tu-token-aquí"
 ```
 

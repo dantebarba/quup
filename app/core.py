@@ -9,6 +9,7 @@ from pathlib import Path
 from openai import OpenAI
 from plexapi.server import PlexServer
 from plexapi.video import Movie
+from plexapi.exceptions import NotFound
 
 from app.config import settings
 
@@ -89,6 +90,18 @@ class PlexAICurator:
             # Create or get vector store
             self._ensure_vector_store()
             
+            # Capture existing file IDs before upload
+            logger.info("Capturing existing vector store files...")
+            old_file_ids = []
+            try:
+                files = self.openai_client.beta.vector_stores.files.list(
+                    vector_store_id=self.vector_store_id
+                )
+                old_file_ids = [file.id for file in files.data]
+                logger.info(f"Found {len(old_file_ids)} existing files in vector store")
+            except Exception as e:
+                logger.warning(f"Could not list existing files: {e}")
+            
             # Upload JSON file to OpenAI
             logger.info("Uploading movie library to OpenAI...")
             file_response = self.openai_client.files.create(
@@ -104,6 +117,19 @@ class PlexAICurator:
             
             logger.info(f"Successfully synced {len(movies_data)} movies to OpenAI")
             logger.info(f"File ID: {file_response.id}, Vector Store ID: {self.vector_store_id}")
+            
+            # Delete old files only after successful upload
+            if old_file_ids:
+                logger.info(f"Cleaning up {len(old_file_ids)} old files from vector store...")
+                for file_id in old_file_ids:
+                    try:
+                        self.openai_client.beta.vector_stores.files.delete(
+                            vector_store_id=self.vector_store_id,
+                            file_id=file_id
+                        )
+                        logger.debug(f"Deleted old file {file_id} from vector store")
+                    except Exception as e:
+                        logger.warning(f"Failed to delete old file {file_id}: {e}")
             
             return {
                 "success": True,
@@ -164,9 +190,6 @@ class PlexAICurator:
                 if vs.name == store_name:
                     self.vector_store_id = vs.id
                     logger.info(f"Found existing vector store: {self.vector_store_id}")
-                    
-                    # Clean up old files
-                    self._cleanup_vector_store_files()
                     return
             
             # Create new vector store if not found
@@ -186,24 +209,6 @@ class PlexAICurator:
         except Exception as e:
             logger.error(f"Error managing vector store: {e}", exc_info=True)
             raise
-    
-    def _cleanup_vector_store_files(self):
-        """Remove old files from vector store."""
-        try:
-            logger.info("Cleaning up old vector store files...")
-            files = self.openai_client.beta.vector_stores.files.list(
-                vector_store_id=self.vector_store_id
-            )
-            
-            for file in files.data:
-                self.openai_client.beta.vector_stores.files.delete(
-                    vector_store_id=self.vector_store_id,
-                    file_id=file.id
-                )
-                logger.debug(f"Deleted file {file.id} from vector store")
-                
-        except Exception as e:
-            logger.warning(f"Error cleaning up vector store files: {e}")
     
     def get_recommendations(self) -> List[str]:
         """
@@ -371,8 +376,8 @@ class PlexAICurator:
                 existing_playlist = self.plex.playlist(settings.playlist_name)
                 existing_playlist.delete()
                 logger.info(f"Deleted existing playlist '{settings.playlist_name}'")
-            except:
-                pass  # Playlist doesn't exist
+            except NotFound:
+                logger.debug(f"Playlist '{settings.playlist_name}' does not exist, will create new one")
             
             # Create new playlist
             playlist = self.plex.createPlaylist(settings.playlist_name, items=movies_found)

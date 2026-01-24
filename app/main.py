@@ -176,7 +176,7 @@ async def sync_endpoint(background_tasks: BackgroundTasks):
 
 
 @app.post("/recommend", response_model=RecommendationResponse, dependencies=[Depends(verify_api_token)])
-async def recommend_endpoint(background_tasks: BackgroundTasks, sync_mode: bool = False):
+async def recommend_endpoint(background_tasks: BackgroundTasks, async_mode: bool = False):
     """
     Generate movie recommendations based on watch history.
     
@@ -189,12 +189,12 @@ async def recommend_endpoint(background_tasks: BackgroundTasks, sync_mode: bool 
     - Sending Telegram notification (if enabled)
     
     Args:
-        sync_mode: If True, returns immediately and processes in background
+        async_mode: If True, returns immediately and processes in background
         
     Requires: x-api-token header
     """
     try:
-        if sync_mode:
+        if async_mode:
             # Process in background
             background_tasks.add_task(generate_recommendations_task)
             

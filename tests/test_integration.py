@@ -10,6 +10,7 @@ from openai.types.beta import Assistant, VectorStore
 from openai.types.beta.threads import Run, Message, MessageContent
 from openai.types.beta.threads.text import Text
 from openai.types import FileObject
+from plexapi.exceptions import NotFound
 
 from app.main import app
 from app.core import PlexAICurator
@@ -75,7 +76,7 @@ def mock_plex_server():
     server = Mock()
     server.library.section.return_value = library
     server.createPlaylist.return_value = Mock()
-    server.playlist.side_effect = Exception("Playlist not found")
+    server.playlist.side_effect = NotFound("Playlist not found")
     
     return server
 

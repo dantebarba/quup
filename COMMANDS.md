@@ -114,7 +114,7 @@ curl -X POST http://localhost:8000/recommend \
   -H "x-api-token: YOUR_TOKEN_HERE" | python -m json.tool
 
 # Modo asíncrono (proceso en background)
-curl -X POST "http://localhost:8000/recommend?sync_mode=true" \
+curl -X POST "http://localhost:8000/recommend?async_mode=true" \
   -H "x-api-token: YOUR_TOKEN_HERE" | python -m json.tool
 ```
 
